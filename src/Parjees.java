@@ -37,6 +37,8 @@ public class Parjees {
             if (currentPlayer.hasNotStarted()) {
                 firstThrow(currentPlayerIndex);
             }
+            players[currentPlayerIndex].shellThrow();
+            ShellToMove(currentPlayerIndex, players[currentPlayerIndex].getScore());
         }
 
         currentPlayerIndex = (currentPlayerIndex + 1) % 2;
@@ -44,23 +46,30 @@ public class Parjees {
 
     public void firstThrow(int currentPlayerIndex) {
         players[currentPlayerIndex].shellThrow();
-        ArrayList shells = players[currentPlayerIndex].getScore();
+        ArrayList<Integer> shells = players[currentPlayerIndex].getScore();
         for (int i = 0; i < shells.size(); i++) {
             if (shells.get(i).equals(1)) {
                 players[currentPlayerIndex].getPieces()[0].setPosition(0);
                 shells.remove(i);
-
             }
         }
+        ShellToMove(currentPlayerIndex, shells);
     }
 
-    public void ShellToMove(Player currentplayer, ArrayList<Integer> shells) {
+    public void ShellToMove(int currentPlayerIndex, ArrayList<Integer> shells) {
         for (int i = 0; i < shells.size(); i++) {
-            System.out.println("Enter the index of the pieces");
-            int id = input.nextInt();
-            Piece p = currentplayer.getPieces()[id];
-            currentplayer.movePiece(players[currentPlayerIndex], players[(currentPlayerIndex + 1) % 2], p,
-                    shells.get(i));
+            boolean HadMoved = false;
+            while (HadMoved) {
+                System.out.println("Enter the index of the pieces");
+                int id = input.nextInt();
+                Piece p = players[currentPlayerIndex].getPieces()[id];
+                HadMoved = players[currentPlayerIndex].movePiece(players[currentPlayerIndex],
+                        players[(currentPlayerIndex + 1) % 2], p,
+                        shells.get(i));
+                if (HadMoved) {
+                    break;
+                }
+            }
 
         }
     }

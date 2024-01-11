@@ -6,7 +6,7 @@ public class Player {
     private Piece[] pieces;
     private Board track;
     private ArrayList<Integer> score;
-    
+
     public ArrayList<Integer> getScore() {
         return score;
     }
@@ -60,7 +60,7 @@ public class Player {
         }
     }
 
-    public void movePiece(Player player, Player otherplayer, Piece piece, int numSpaces) {
+    public boolean movePiece(Player player, Player otherplayer, Piece piece, int numSpaces) {
         Board track = player.getTrack();
         int currentPosition = piece.getPosition();
         int newPosition = (currentPosition + numSpaces);
@@ -75,16 +75,19 @@ public class Player {
                 if (!otherplayer.track.getSquare(newPosition).isSafeZone()) {
                     otherplayer.track.getSquare(enemyposition).unOccupy(piece2);
                     piece2.setPosition(-1);
+                    piece.setPosition(newPosition);
+                    return true;
                 } else
                     System.out.println("You can't make this move");
-                return;
+                return false;
             }
         }
         if (newPosition <= track.getSquares().size()) {
             piece.setPosition(newPosition);
+            return true;
         } else {
             System.out.println("Too many steps, can't move");
-            return;
+            return false;
         }
 
     }
