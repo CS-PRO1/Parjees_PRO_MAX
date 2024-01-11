@@ -3,21 +3,24 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class Parjees {
-    // private Player[] players;
-    private Player player_1;
-    private Player player_2;
+    private Player[] players;
+    // private Player player_1;
+    // private Player player_2;
     private Board board;
     private int currentPlayerIndex;
     private Random random;
+    Scanner input;
+    // int alternator = 0;
 
-    public Parjees() {
-        // this.players = new Player[2];
-        // this.players[0] = new Player("Player 1", new int[84]); // Player 1's track
-        // this.players[1] = new Player("Player 2", new int[84]); // Player 2's track
-        this.player_1 = new Player("Player 1");
-        this.player_2 = new Player("Player 2");
+    public Parjees(Scanner input) {
+        this.players = new Player[2];
+        this.players[0] = new Player("Player 1"); // Player 1's track
+        this.players[1] = new Player("Player 2"); // Player 2's track
+        // this.player_1 = new Player("Player 1");
+        // this.player_2 = new Player("Player 2");
         this.board = new Board();
         this.currentPlayerIndex = 0;
+        this.input = input;
     }
 
     public void initializeBoard() {
@@ -25,34 +28,48 @@ public class Parjees {
     }
 
     public void playGame() {
+        int currentPlayerIndex = 0;
         initializeBoard();
-        int alternator = 0;
-        Player currentplayer;
+        Player currentPlayer = players[currentPlayerIndex];
         while (!isGameOver()) {
             displayBoard();
-            if (alternator == 0) {
-                currentplayer = player_1;
-            } else {
-                currentplayer = player_2;
+
+            if (currentPlayer.hasNotStarted()) {
+                firstThrow(currentPlayerIndex);
             }
+        }
 
-            if (currentplayer.hasNotStarted()) {
-                // ArrayList shell = currentplayer.shellThrow();
+        currentPlayerIndex = (currentPlayerIndex + 1) % 2;
+    }
 
-                // for (int i = 0; i < shell.size(); i++) {
+    public void firstThrow(int currentPlayerIndex) {
+        players[currentPlayerIndex].shellThrow();
+        ArrayList shells = players[currentPlayerIndex].getScore();
+        for (int i = 0; i < shells.size(); i++) {
+            if (shells.get(i).equals(1)) {
+                players[currentPlayerIndex].getPieces()[0].setPosition(0);
+                shells.remove(i);
 
-                // }
             }
+        }
+    }
 
-            alternator = (alternator + 1) % 2;
+    public void ShellToMove(Player currentplayer, ArrayList<Integer> shells) {
+        for (int i = 0; i < shells.size(); i++) {
+            System.out.println("Enter the index of the pieces");
+            int id = input.nextInt();
+            Piece p = currentplayer.getPieces()[id];
+            currentplayer.movePiece(players[currentPlayerIndex], players[(currentPlayerIndex + 1) % 2], p,
+                    shells.get(i));
+
         }
     }
 
     public boolean isGameOver() {
-        if (player_1.hasWon()) {
+        if (players[0].hasWon()) {
             System.out.println("Player 1 is the winner!");
             return true;
-        } else if (player_2.hasWon()) {
+        } else if (players[1].hasWon()) {
             System.out.println("Player 2 is the winner!");
             return true;
         } else
@@ -60,8 +77,8 @@ public class Parjees {
     }
 
     public void displayBoard() {
-        Board player1Track = player_1.getTrack();
-        Board player2Track = player_2.getTrack();
+        Board player1Track = players[0].getTrack();
+        Board player2Track = players[1].getTrack();
 
         System.out.println(repeatString("-", 100));
         System.out.println();
